@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>☀️ The Sunny Tavern - CRM</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Inter:wght@400;500;600;700&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --orange: #FF6B35;
+            --blue: #1E90FF;
+            --green: #00D084;
+            --yellow: #FFD700;
+            --navy: #0B2F4F;
+            --light-gray: #F8F9FA;
+            --border-gray: #E0E0E0;
+            --text-primary: #0B2F4F;
+            --text-secondary: #6B7280;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 16px rgba(0,0,0,0.15);
+            --transition: 0.3s ease;
+        }
+
+        html, body { height: 100%; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FFFFFF;
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* HEADER */
+        header {
+            background: linear-gradient(135deg, var(--orange) 0%, #FF8C42 100%);
+            color: white;
+            padding: 16px 24px;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-title {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .header-time {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-left: 16px;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .header-stat {
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        /* NAVIGATION TABS */
+        .nav-tabs {
+            display: flex;
+            background: var(--light-gray);
+            border-bottom: 2px solid var(--border-gray);
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border-bottom: 3px solid transparent;
+            transition: all var(--transition);
+            white-space: nowrap;
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        .nav-tab:hover {
+            background: white;
+            color: var(--text-primary);
+        }
+
+        .nav-tab.active {
+            color: var(--orange);
+            border-bottom-color: var(--orange);
+            background: white;
+        }
+
+        /* MAIN CONTAINER */
+        .container {
+            display: flex;
+            height: calc(100vh - 60px);
+        }
+
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        /* PAGE SECTIONS */
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* SECTION TITLE */
+        .section-title {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-subtitle {
+            color: var(--text-secondary);
+            font-size: 13px;
+            margin-bottom: 24px;
+        }
+
+        /* CARDS GRID */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .card {
+            background: white;
+            border: 2px solid var(--border-gray);
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--blue);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .card-title {
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--navy);
+        }
+
+        .badge {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+
+        .badge-free {
+            background: #E8F5E9;
+            color: var(--green);
+        }
+
+        .badge-occupied {
+            background: #FFEBEE;
+            color: #D32F2F;
+        }
+
+        .badge-reserved {
+            background: #FFF9C4;
+            color: #F57F17;
+        }
+
+        .card-content {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* BUTTONS */
+        .btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+            transition: all var(--transition);
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        .btn-primary {
+            background: var(--orange);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-primary:hover {
+            background: #E55A2B;
+            transform: scale(1.05);
+        }
+
+        .btn-secondary {
+            background: var(--blue);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-secondary:hover {
+            background: #1873CC;
+            transform: scale(1.05);
+        }
+
+        .btn-sm {
+            padding: 6px 10px;
+            font-size: 11px;
+        }
+
+        /* TABLE */
+        .table-wrapper {
+            background: white;
+            border-radius: 12px;
+            border: 2px solid var(--border-gray);
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th {
+            background: var(--light-gray);
+            padding: 12px;
+            text-align: right;
+            font-weight: 700;
+            color: var(--navy);
+            border-bottom: 2px solid var(--border-gray);
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-gray);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background: var(--light-gray);
+        }
+
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: var(--shadow-md);
+        }
+
+        .modal-header {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--navy);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-gray);
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            transition: border var(--transition);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(30, 144, 255, 0.1);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn-close {
+            background: var(--border-gray);
+            color: var(--text-primary);
+        }
+
+        .btn-close:hover {
+            background: #D0D0D0;
+        }
+
+        /* TOAST */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: var(--orange);
+            color: white;
+            padding: 14px 20px;
+            border-radius: 8px;
+            box-shadow: var(--shadow-md);
+            animation: slideUp 0.3s ease;
+            z-index: 2000;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* STATS BOXES */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, var(--blue) 0%, #5BA3FF 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stat-box.orange {
+            background: linear-gradient(135deg, var(--orange) 0%, #FF8C42 100%);
+        }
+
+        .stat-box.green {
+            background: linear-gradient(135deg, var(--green) 0%, #00E099 100%);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .header-right {
+                display: none;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 11px;
+            }
+
+            .section-title {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <header>
+        <div class="header-left">
+            <div class="header-title">🦁 The Sunny Tavern</div>
+        </div>
+        <div class="header-time" id="headerTime"></div>
+        <div class="header-right">
+            <div class="header-stat">
+                <div class="stat-value" id="occupiedCount">0</div>
+                <div>שולחנות תפוסים</div>
+            </div>
+            <div class="header-stat">
+                <div class="stat-value" id="reservedCount">0</div>
+                <div>הזמנות</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- NAVIGATION -->
+    <div class="nav-tabs">
+        <button class="nav-tab active" onclick="switchPage('dashboard')">📊 לוח בקרה</button>
+        <button class="nav-tab" onclick="switchPage('tables')">🪑 שולחנות</button>
+        <button class="nav-tab" onclick="switchPage('customers')">👥 לקוחות</button>
+        <button class="nav-tab" onclick="switchPage('menu')">🍜 תפריט</button>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="container">
+        <div class="content">
+
+            <!-- DASHBOARD PAGE -->
+            <div class="page active" id="dashboard">
+                <div class="section-title">📊 לוח בקרה</div>
+                <div class="section-subtitle">ביקורת מהירה על המסעדה שלך</div>
+
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-label">סך הכנסה היום</div>
+                        <div class="stat-number" id="todayRevenue">₪0</div>
+                    </div>
+                    <div class="stat-box orange">
+                        <div class="stat-label">שולחנות זמינים</div>
+                        <div class="stat-number" id="availableTablesCount">0/0</div>
+                    </div>
+                    <div class="stat-box green">
+                        <div class="stat-label">לקוחות קבועים</div>
+                        <div class="stat-number" id="loyalCustomersCount">0</div>
+                    </div>
+                </div>
+
+                <h3 style="font-family: 'Fredoka'; font-size: 18px; margin: 24px 0 16px; color: var(--navy);">🎯 הזמנות היום</h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>שם</th>
+                                <th>זמן</th>
+                                <th>שולחן</th>
+                                <th>מצב</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="todayReservationsBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TABLES PAGE -->
+            <div class="page" id="tables">
+                <div class="section-title">🪑 ניהול שולחנות</div>
+                <div class="section-subtitle">עדכן סטטוס של כל שולחן</div>
+
+                <button class="btn btn-primary" onclick="openModal('addTableModal')" style="margin-bottom: 24px; max-width: 150px;">+ הוסף שולחן</button>
+
+                <div class="cards-grid" id="tablesGrid">
+                </div>
+            </div>
+
+            <!-- CUSTOMERS PAGE -->
+            <div class="page" id="customers">
+                <div class="section-title">👥 לקוחות קבועים</div>
+                <div class="section-subtitle">בסיס נתונים של לקוחותיך האהובים</div>
+
+                <button class="btn btn-primary" onclick="openModal('addCustomerModal')" style="margin-bottom: 24px; max-width: 150px;">+ לקוח חדש</button>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>שם</th>
+                                <th>טלפון</th>
+                                <th>ביקורות</th>
+                                <th>סוג</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="customersBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- MENU PAGE -->
+            <div class="page" id="menu">
+                <div class="section-title">🍜 תפריט המסעדה</div>
+                <div class="section-subtitle">כל המנות והמחירים</div>
+
+                <button class="btn btn-primary" onclick="openModal('addMenuItemModal')" style="margin-bottom: 24px; max-width: 150px;">+ הוסף מנה</button>
+
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>שם המנה</th>
+                                <th>קטגוריה</th>
+                                <th>תיאור</th>
+                                <th>מחיר</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="menuBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALS -->
+    <div class="modal" id="addTableModal">
+        <div class="modal-content">
+            <div class="modal-header">🪑 הוסף שולחן חדש</div>
+            <div class="form-group">
+                <label class="form-label">מספר שולחן</label>
+                <input type="number" class="form-input" id="tableNumber" placeholder="1">
+            </div>
+            <div class="form-group">
+                <label class="form-label">מספר מקומות</label>
+                <input type="number" class="form-input" id="tableSeats" placeholder="4">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary btn-close" onclick="closeModal('addTableModal')">ביטול</button>
+                <button class="btn btn-primary" onclick="addTable()">הוסף</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="addCustomerModal">
+        <div class="modal-content">
+            <div class="modal-header">👥 הוסף לקוח</div>
+            <div class="form-group">
+                <label class="form-label">שם</label>
+                <input type="text" class="form-input" id="customerName" placeholder="טארו יאמאמוטו">
+            </div>
+            <div class="form-group">
+                <label class="form-label">טלפון</label>
+                <input type="text" class="form-input" id="customerPhone" placeholder="05xxxxxxxx">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary btn-close" onclick="closeModal('addCustomerModal')">ביטול</button>
+                <button class="btn btn-primary" onclick="addCustomer()">הוסף</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="addMenuItemModal">
+        <div class="modal-content">
+            <div class="modal-header">🍜 הוסף מנה</div>
+            <div class="form-group">
+                <label class="form-label">שם המנה</label>
+                <input type="text" class="form-input" id="menuItemName" placeholder="ראמן דלוקס">
+            </div>
+            <div class="form-group">
+                <label class="form-label">קטגוריה</label>
+                <input type="text" class="form-input" id="menuItemCategory" placeholder="ראמן">
+            </div>
+            <div class="form-group">
+                <label class="form-label">תיאור</label>
+                <input type="text" class="form-input" id="menuItemDesc" placeholder="חריף, ברוטני">
+            </div>
+            <div class="form-group">
+                <label class="form-label">מחיר</label>
+                <input type="number" class="form-input" id="menuItemPrice" placeholder="45">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary btn-close" onclick="closeModal('addMenuItemModal')">ביטול</button>
+                <button class="btn btn-primary" onclick="addMenuItem()">הוסף</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DATA STORE
+        let tables = [
+            { id: 1, seats: 4, status: 'free' },
+            { id: 2, seats: 2, status: 'free' },
+            { id: 3, seats: 6, status: 'occupied' },
+            { id: 4, seats: 4, status: 'reserved' },
+        ];
+
+        let customers = [
+            { id: 1, name: 'טארו יאמאמוטו', phone: '0501234567', visits: 8, type: 'VIP' },
+            { id: 2, name: 'נמי טנג\'ה', phone: '0507654321', visits: 5, type: 'Regular' },
+        ];
+
+        let reservations = [
+            { id: 1, name: 'טארו יאמאמוטו', table: 1, time: '19:00', date: '2026-05-17', status: 'confirmed' },
+            { id: 2, name: 'נמי טנג\'ה', table: 3, time: '20:30', date: '2026-05-17', status: 'confirmed' },
+        ];
+
+        let menu = [
+            { id: 1, name: 'ראמן דלוקס', category: 'ראמן', desc: 'חריף, ברוטני', price: 45 },
+            { id: 2, name: 'סוסי מיקס', category: 'סושי', desc: '8 חתיכות טריות', price: 55 },
+            { id: 3, name: 'טמפורה עדשים', category: 'מנות צד', desc: 'מבחוץ קריספי', price: 25 },
+            { id: 4, name: 'סלט אולחי', category: 'סלטים', desc: 'עם דייג טון신신신신', price: 35 },
+            { id: 5, name: 'מנת דגים גרוסה', category: 'דגים', desc: 'דג לבן טרי מפתוח', price: 85 },
+            { id: 6, name: 'קינוח פירות טרופיים', category: 'קינוחים', desc: 'מנגו, כוקוס, בננה', price: 20 },
+        ];
+
+        // UPDATE HEADER TIME
+        function updateTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('headerTime').textContent = `⏰ ${hours}:${minutes}`;
+        }
+        updateTime();
+        setInterval(updateTime, 10000);
+
+        // NAVIGATION
+        function switchPage(pageName) {
+            document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+            document.getElementById(pageName).classList.add('active');
+
+            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+            event.target.classList.add('active');
+
+            renderAllContent();
+        }
+
+        // MODALS
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        // TOAST
+        function showToast(msg, icon = '✅') {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = `${icon} ${msg}`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // ADD TABLE
+        function addTable() {
+            const num = parseInt(document.getElementById('tableNumber').value);
+            const seats = parseInt(document.getElementById('tableSeats').value);
+
+            if (!num || !seats) {
+                showToast('מלא את כל השדות!', '⚠️');
+                return;
+            }
+
+            tables.push({ id: tables.length + 1, seats, status: 'free' });
+            closeModal('addTableModal');
+            document.getElementById('tableNumber').value = '';
+            document.getElementById('tableSeats').value = '';
+            renderTables();
+            showToast(`שולחן ${num} הוסף בהצלחה!`);
+        }
+
+        // ADD CUSTOMER
+        function addCustomer() {
+            const name = document.getElementById('customerName').value;
+            const phone = document.getElementById('customerPhone').value;
+
+            if (!name || !phone) {
+                showToast('מלא את כל השדות!', '⚠️');
+                return;
+            }
+
+            customers.push({ id: customers.length + 1, name, phone, visits: 1, type: 'New' });
+            closeModal('addCustomerModal');
+            document.getElementById('customerName').value = '';
+            document.getElementById('customerPhone').value = '';
+            renderCustomers();
+            showToast(`${name} נוסף בהצלחה! ⛵`);
+        }
+
+        // ADD MENU ITEM
+        function addMenuItem() {
+            const name = document.getElementById('menuItemName').value;
+            const category = document.getElementById('menuItemCategory').value;
+            const desc = document.getElementById('menuItemDesc').value;
+            const price = parseInt(document.getElementById('menuItemPrice').value);
+
+            if (!name || !category || !price) {
+                showToast('מלא את כל השדות!', '⚠️');
+                return;
+            }
+
+            menu.push({ id: menu.length + 1, name, category, desc, price });
+            closeModal('addMenuItemModal');
+            document.getElementById('menuItemName').value = '';
+            document.getElementById('menuItemCategory').value = '';
+            document.getElementById('menuItemDesc').value = '';
+            document.getElementById('menuItemPrice').value = '';
+            renderMenu();
+            showToast(`${name} הוסף לתפריט! 🍜`);
+        }
+
+        // RENDER FUNCTIONS
+        function renderTables() {
+            const grid = document.getElementById('tablesGrid');
+            grid.innerHTML = tables.map(t => `
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">שולחן ${t.id}</div>
+                        <div class="badge badge-${t.status}">${t.status === 'free' ? 'פנוי' : t.status === 'occupied' ? 'תפוס' : 'שמור'}</div>
+                    </div>
+                    <div class="card-content">
+                        🪑 ${t.seats} מקומות
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn btn-primary btn-sm" onclick="setTableStatus(${t.id}, 'occupied')">תפוס</button>
+                        <button class="btn btn-secondary btn-sm" onclick="setTableStatus(${t.id}, 'free')">פנוי</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function setTableStatus(id, status) {
+            const table = tables.find(t => t.id === id);
+            if (table) {
+                table.status = status;
+                renderTables();
+                updateStats();
+                showToast(`שולחן ${id} - ${status === 'free' ? 'פנוי' : 'תפוס'}`);
+            }
+        }
+
+        function renderCustomers() {
+            const body = document.getElementById('customersBody');
+            body.innerHTML = customers.map(c => `
+                <tr>
+                    <td><strong>${c.name}</strong></td>
+                    <td>${c.phone}</td>
+                    <td>${c.visits} ביקורות</td>
+                    <td>${c.type}</td>
+                    <td><button class="btn btn-secondary btn-sm" onclick="reserveForCustomer(${c.id})">הזמן</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function reserveForCustomer(id) {
+            const customer = customers.find(c => c.id === id);
+            const freeTable = tables.find(t => t.status === 'free');
+
+            if (freeTable) {
+                reservations.push({
+                    id: reservations.length + 1,
+                    name: customer.name,
+                    table: freeTable.id,
+                    time: '19:30',
+                    date: '2026-05-17',
+                    status: 'confirmed'
+                });
+                customer.visits++;
+                renderCustomers();
+                renderTodayReservations();
+                showToast(`הזמנה בשם ${customer.name} לשולחן ${freeTable.id}! ⛵`);
+            } else {
+                showToast('אין שולחנות פנויים כרגע!', '⚠️');
+            }
+        }
+
+        function renderMenu() {
+            const body = document.getElementById('menuBody');
+            body.innerHTML = menu.map(m => `
+                <tr>
+                    <td><strong>${m.name}</strong></td>
+                    <td>${m.category}</td>
+                    <td style="color: var(--text-secondary);">${m.desc}</td>
+                    <td><strong style="color: var(--orange);">₪${m.price}</strong></td>
+                    <td><button class="btn btn-secondary btn-sm" onclick="deleteMenuItem(${m.id})">🗑️</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function deleteMenuItem(id) {
+            menu = menu.filter(m => m.id !== id);
+            renderMenu();
+            showToast('מנה הוסרה מהתפריט');
+        }
+
+        function renderTodayReservations() {
+            const body = document.getElementById('todayReservationsBody');
+            const today = new Date().toISOString().split('T')[0];
+            const todayRes = reservations.filter(r => r.date === today).slice(0, 5);
+
+            body.innerHTML = todayRes.map(r => `
+                <tr>
+                    <td><strong>${r.name}</strong></td>
+                    <td>${r.time}</td>
+                    <td>שולחן ${r.table}</td>
+                    <td><span class="badge badge-${r.status === 'confirmed' ? 'free' : 'reserved'}">${r.status === 'confirmed' ? '✓ מאושר' : '⏳ ממתין'}</span></td>
+                    <td><button class="btn btn-secondary btn-sm" onclick="deleteReservation(${r.id})">ביטול</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function deleteReservation(id) {
+            reservations = reservations.filter(r => r.id !== id);
+            renderTodayReservations();
+            showToast('הזמנה בוטלה');
+        }
+
+        function updateStats() {
+            const occupied = tables.filter(t => t.status === 'occupied').length;
+            const reserved = reservations.filter(r => r.status === 'confirmed').length;
+            const totalTables = tables.length;
+
+            document.getElementById('occupiedCount').textContent = occupied;
+            document.getElementById('reservedCount').textContent = reserved;
+            document.getElementById('availableTablesCount').textContent = `${totalTables - occupied}/${totalTables}`;
+            document.getElementById('loyalCustomersCount').textContent = customers.filter(c => c.type === 'VIP').length;
+
+            const revenue = menu.reduce((sum, m) => sum + m.price, 0) * 2;
+            document.getElementById('todayRevenue').textContent = `₪${revenue}`;
+        }
+
+        function renderAllContent() {
+            renderTables();
+            renderCustomers();
+            renderMenu();
+            renderTodayReservations();
+            updateStats();
+        }
+
+        // INIT
+        window.addEventListener('load', () => {
+            renderAllContent();
+        });
+
+        // Close modal on background click
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal(modal.id);
+            });
+        });
+    </script>
+</body>
+</html>
